@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 
 public class IndexerHashTable<Integer,String> {
-    private static int TABLE_SIZE; 
+    public static int TABLE_SIZE; 
     private LinkedList<Entry<Integer, String>>[] table;
 
     public IndexerHashTable() {
@@ -36,6 +36,18 @@ public class IndexerHashTable<Integer,String> {
                 return;
             }
         }
+    }
+    
+    public String get(int key) {
+        int index = getIndex(key);
+        LinkedList<Entry<Integer, String>> slot = table[index];
+        
+        for (Entry<Integer, String> entry : slot ) {
+            if (entry.getKey().equals(key)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
     
     private int getIndex(int key) {
