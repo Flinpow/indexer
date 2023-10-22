@@ -21,22 +21,28 @@ public class Indexer {
     public static final String FREQ_OPERATION = "freq";
     public static final String FREQWORD_OPERATION = "freq-word";
     public static final String SEARCH_OPERATION = "search";
+    
      public static void main(String[] args) {
-         
+         int i =10;
+         while(!IndexerHashTable.isPrimo(i)) {
+             System.out.println(i + " não é primo");
+             i++;
+         }
+         System.out.println(i+" é primo");
     //Veriica o tipo da operação passada no primeiro parâmetro de entrada - arg[0]
-       try {
-        if (args[0].contains(FREQ_OPERATION)){
-            freqNFile(args[1], args[2]);
-        } else if(args[0].contains(FREQWORD_OPERATION)) {
-            freqWordNFile(args[1], args[2]);    
-        } else if (args[0].contains(SEARCH_OPERATION)) {
-            searchTermNFile(args[1], args[2]);
-        }else {
-            System.out.println("Forneça um argumento válido");
-        }
-       }catch(ArrayIndexOutOfBoundsException e) {
-           System.out.println("Forneça todos os 3 argumentos para a execução correta do indexador");
-       }
+//       try {
+//        if (args[0].contains(FREQ_OPERATION)){
+//            freqNFile(args[1], args[2]);
+//        } else if(args[0].contains(FREQWORD_OPERATION)) {
+//            freqWordNFile(args[1], args[2]);    
+//        } else if (args[0].contains(SEARCH_OPERATION)) {
+//            searchTermNFile(args[1], args[2]);
+//        }else {
+//            System.out.println("Forneça um argumento válido");
+//        }
+//       }catch(ArrayIndexOutOfBoundsException e) {
+//           System.out.println("Forneça todos os 3 argumentos para a execução correta do indexador");
+//       }
     }
     
     private static void freqNFile(String n, String filePath) { 
