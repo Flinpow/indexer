@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.indexerproject;
 
 import java.util.LinkedList;
@@ -11,14 +7,13 @@ public class IndexerHashTable<Integer, String> {
     private static final int INITIAL_CAPACITY = 5;
     private static final double LOAD_FACTOR = 0.75;
     public static int TABLE_SIZE;
-    private LinkedList<Entry<Integer, String>>[] table;
+    private LinkedList<IndexerHashTableEntry<Integer, String>>[] table;
 
     public IndexerHashTable() {
-
         TABLE_SIZE = 0;
         table = new LinkedList[INITIAL_CAPACITY];
         for (int i = 0; i < INITIAL_CAPACITY; i++) {
-            table[i] = new LinkedList<Entry<Integer, String>>();
+            table[i] = new LinkedList<>();
         }
     }
 
@@ -28,29 +23,23 @@ public class IndexerHashTable<Integer, String> {
             resize();
         }
         int index = getIndex(key, table.length);
-        LinkedList<Entry<Integer, String>> slot = table[index];
+        LinkedList<IndexerHashTableEntry<Integer, String>> slot = table[index];
 
         if (slot == null) {
             slot = new LinkedList<>();
             table[index] = slot;
         }
-//        for (Entry<Integer, String> entry : slot) {
-//            if (entry.getKey().equals(key)) {
-//                entry.setValue(value);
-//                return;
-//            }
-//        }
 
-        slot.add(new Entry(key, value));
+        slot.add(new IndexerHashTableEntry(key, value));
         table[index] = slot;
         TABLE_SIZE++;
     }
 
     public String get(int key) {
         int index = getIndex(key, table.length);
-        LinkedList<Entry<Integer, String>> slot = table[index];
+        LinkedList<IndexerHashTableEntry<Integer, String>> slot = table[index];
 
-        for (Entry<Integer, String> entry : slot) {
+        for (IndexerHashTableEntry<Integer, String> entry : slot) {
             if (entry.getKey().equals(key)) {
                 return entry.getValue();
             }
@@ -58,10 +47,16 @@ public class IndexerHashTable<Integer, String> {
         return null;
     }
 
-    public int getWordsCount(int key) {
+    public int getWordsCount(int key, String word) {
+        int count = 0;
         int index = getIndex(key, table.length);
-        LinkedList<Entry<Integer, String>> slot = table[index];
-        return slot == null ? 0 : slot.size();
+        LinkedList<IndexerHashTableEntry<Integer, String>> slot = table[index];
+        for (IndexerHashTableEntry<Integer, String> entry : slot) {
+            if (entry.getValue() != null && entry.getValue().equals(word)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private int getIndex(int key, int tableSize) {
@@ -87,17 +82,16 @@ public class IndexerHashTable<Integer, String> {
     }
 
     private void resize() {
-        System.out.println("Redimensionando a tabela");
         int newSize = table.length * 2;
         //garante que o tamanho da tabela seja um número primo pois facilita na alocação dos valores.
         while (!isPrimo(newSize)) {
             newSize++;
         }
 
-        LinkedList<Entry<Integer, String>>[] newTable = new LinkedList[newSize];
-        for (LinkedList<Entry<Integer, String>> bucket : table) {
+        LinkedList<IndexerHashTableEntry<Integer, String>>[] newTable = new LinkedList[newSize];
+        for (LinkedList<IndexerHashTableEntry<Integer, String>> bucket : table) {
             if (bucket != null) {
-                for (Entry<Integer, String> entry : bucket) {
+                for (IndexerHashTableEntry<Integer, String> entry : bucket) {
                     int newIndex = getIndex((int) entry.getKey(), newSize);
                     if (newTable[newIndex] == null) {
                         newTable[newIndex] = new LinkedList<>();
@@ -107,7 +101,10 @@ public class IndexerHashTable<Integer, String> {
             }
         }
         table = newTable;
-        System.out.println("a tabela agora tem o tamanho de [" + table.length + "]");
     }
 
+    public LinkedList<IndexerHashTableEntry<Integer, String>>[] getTable() {
+        return table;
+    }
+    
 }

@@ -6,13 +6,13 @@ package com.mycompany.indexerproject;
 
 import java.util.Map;
 
-public class Entry<Integer, String> implements Map.Entry<Integer, String> {
+public class IndexerHashTableEntry<Integer, String> implements Map.Entry<Integer, String> {
 
     private Integer key;
     private String value;
-    private Entry<Integer,String> next;
+    private IndexerHashTableEntry<Integer,String> next;
 
-    public Entry(Integer key, String value) {
+    public IndexerHashTableEntry(Integer key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -34,11 +34,11 @@ public class Entry<Integer, String> implements Map.Entry<Integer, String> {
         return value;
     }
 
-    public Entry<Integer, String> getNext() {
+    public IndexerHashTableEntry<Integer, String> getNext() {
         return next;
     }
 
-    public void setNext(Entry<Integer, String> next) {
+    public void setNext(IndexerHashTableEntry<Integer, String> next) {
         this.next = next;
     }
     
