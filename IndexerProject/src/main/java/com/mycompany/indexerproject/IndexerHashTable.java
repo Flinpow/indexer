@@ -5,71 +5,109 @@
 package com.mycompany.indexerproject;
 
 import java.util.LinkedList;
-import java.util.Map.Entry;
 
-public class IndexerHashTable<Integer,String> {
-    public static int TABLE_SIZE; 
+public class IndexerHashTable<Integer, String> {
+
+    private static final int INITIAL_CAPACITY = 5;
+    private static final double LOAD_FACTOR = 0.75;
+    public static int TABLE_SIZE;
     private LinkedList<Entry<Integer, String>>[] table;
 
     public IndexerHashTable() {
-    }
-    
-    public IndexerHashTable(int size) {
-        //garante que o tamanho da tabela seja um número primo pois facilita na alocação dos valores.
-        while(!isPrimo(size)) {
-            size++;
-        }
-        TABLE_SIZE = size;
-        table = new LinkedList[size];
-        for(int i=0; i < size; i++) {
-            table[i] = new LinkedList<>();
+
+        TABLE_SIZE = 0;
+        table = new LinkedList[INITIAL_CAPACITY];
+        for (int i = 0; i < INITIAL_CAPACITY; i++) {
+            table[i] = new LinkedList<Entry<Integer, String>>();
         }
     }
-    
+
     public void put(int key, String value) {
-        int index = getIndex(key);
-        LinkedList<Entry<Integer, String>> slot = table[index];
-        
-        for (Entry<Integer, String> entry : slot) {
-            if (entry.getKey().equals(key)) {
-                entry.setValue(value);
-                return;
-            }
+        if (TABLE_SIZE + 1 > LOAD_FACTOR * table.length) {
+            // Redimensionar a tabela se o fator de carga for atingido.
+            resize();
         }
-    }
-    
-    public String get(int key) {
-        int index = getIndex(key);
+        int index = getIndex(key, table.length);
         LinkedList<Entry<Integer, String>> slot = table[index];
-        
-        for (Entry<Integer, String> entry : slot ) {
+
+        if (slot == null) {
+            slot = new LinkedList<>();
+            table[index] = slot;
+        }
+//        for (Entry<Integer, String> entry : slot) {
+//            if (entry.getKey().equals(key)) {
+//                entry.setValue(value);
+//                return;
+//            }
+//        }
+
+        slot.add(new Entry(key, value));
+        table[index] = slot;
+        TABLE_SIZE++;
+    }
+
+    public String get(int key) {
+        int index = getIndex(key, table.length);
+        LinkedList<Entry<Integer, String>> slot = table[index];
+
+        for (Entry<Integer, String> entry : slot) {
             if (entry.getKey().equals(key)) {
                 return entry.getValue();
             }
         }
         return null;
     }
-    
-    private int getIndex(int key) {
-        return key % TABLE_SIZE;
+
+    public int getWordsCount(int key) {
+        int index = getIndex(key, table.length);
+        LinkedList<Entry<Integer, String>> slot = table[index];
+        return slot == null ? 0 : slot.size();
     }
-    
-    public static boolean isPrimo(int number) {
+
+    private int getIndex(int key, int tableSize) {
+        return (Math.abs(key)) % tableSize;
+    }
+
+    private static boolean isPrimo(int number) {
         if (number <= 1) {
             return false;
         }
-        
+
         if (number <= 3) {
             return true;
         }
-        
-         for (int i = 2; i * i <= number; i++) {
+
+        for (int i = 2; i * i <= number; i++) {
             if (number % i == 0) {
                 return false;
             }
         }
-        
+
         return true;
     }
-    
+
+    private void resize() {
+        System.out.println("Redimensionando a tabela");
+        int newSize = table.length * 2;
+        //garante que o tamanho da tabela seja um número primo pois facilita na alocação dos valores.
+        while (!isPrimo(newSize)) {
+            newSize++;
+        }
+
+        LinkedList<Entry<Integer, String>>[] newTable = new LinkedList[newSize];
+        for (LinkedList<Entry<Integer, String>> bucket : table) {
+            if (bucket != null) {
+                for (Entry<Integer, String> entry : bucket) {
+                    int newIndex = getIndex((int) entry.getKey(), newSize);
+                    if (newTable[newIndex] == null) {
+                        newTable[newIndex] = new LinkedList<>();
+                    }
+                    newTable[newIndex].add(entry);
+                }
+            }
+        }
+        table = newTable;
+        System.out.println("a tabela agora tem o tamanho de [" + table.length + "]");
+    }
+
 }
