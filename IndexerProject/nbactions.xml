@@ -12,8 +12,8 @@
             <properties>
                 <exec.vmArgs></exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
-                <exec.appArgs>--freq 10 C:\Users\AlphaPlayerOne\Desktop\FaculThales\testes-ed2\big\1mb.txt</exec.appArgs>
-                <exec.mainClass>${packageClassName}</exec.mainClass>
+                <exec.appArgs>--search 10 C:\Users\AlphaPlayerOne\Desktop\FaculThales\testes-ed2\small</exec.appArgs>
+                <exec.mainClass>com.mycompany.indexerproject.Indexer</exec.mainClass>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -29,8 +29,8 @@
             <properties>
                 <exec.vmArgs>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
-                <exec.appArgs>--freq 10 C:\Users\AlphaPlayerOne\Desktop\FaculThales\testes-ed2\big\1mb.txt</exec.appArgs>
-                <exec.mainClass>${packageClassName}</exec.mainClass>
+                <exec.appArgs>--search 10 C:\Users\AlphaPlayerOne\Desktop\FaculThales\testes-ed2\small</exec.appArgs>
+                <exec.mainClass>com.mycompany.indexerproject.Indexer</exec.mainClass>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -47,9 +47,9 @@
             <properties>
                 <exec.vmArgs></exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
-                <exec.mainClass>${packageClassName}</exec.mainClass>
+                <exec.mainClass>com.mycompany.indexerproject.Indexer</exec.mainClass>
                 <exec.executable>java</exec.executable>
-                <exec.appArgs>--freq 10 C:\Users\AlphaPlayerOne\Desktop\FaculThales\testes-ed2\big\1mb.txt</exec.appArgs>
+                <exec.appArgs>--search 10 C:\Users\AlphaPlayerOne\Desktop\FaculThales\testes-ed2\small</exec.appArgs>
             </properties>
         </action>
     </actions>

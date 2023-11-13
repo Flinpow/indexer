@@ -1,5 +1,6 @@
 package com.mycompany.indexerproject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -7,14 +8,17 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.exec.ExecuteException;
 
 public class Indexer {
 
@@ -37,16 +41,17 @@ public class Indexer {
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Forneça todos os 3 argumentos para a execução correta do indexador");
+        }catch (ExecuteException e) {
+            System.out.println("Adicone a propriedade ");
         }
     }
 
-    private static void freqNFile(String n, String filePath) {
+    private static void freqNFile(String n, String filePath) throws ExecuteException {
         System.out.println("Iniciando operação --freq N ARQUIVO");
         IndexerHashTable hashTable = new IndexerHashTable();
         try {
-            // apenas testando a leitura e a contagem de palavras dentro do arquivo. ainda não faz o procedimento necessário pro trabalho
             int wordsNumber = Integer.valueOf(n);
-            String content = readFile(filePath, StandardCharsets.UTF_8);
+            String content = readFile(filePath);
 
             Pattern pattern = Pattern.compile("\\b\\w+\\b");
             Matcher matcher = pattern.matcher(content);
@@ -61,17 +66,17 @@ public class Indexer {
             freqNFileOperation(hashTable, wordsNumber);
         } catch (NumberFormatException e) {
             System.out.println("Forneça um número válido para a operação de busca");
-        } catch (AccessDeniedException e) {
-            System.out.println("Para desta operação forneca o caminho para um arquivo de texto");
-        }
+//        } catch (AccessDeniedException e) {
+//            System.out.println("Para desta operação forneca o caminho para um arquivo de texto");
+        } 
     }
 
-    private static void freqWordNFile(String word, String filePath) {
+    private static void freqWordNFile(String word, String filePath) throws ExecuteException {
         System.out.println("Iniciando operação --freq-word PALAVRA ARQUIVO");
         IndexerHashTable hashTable = new IndexerHashTable();
         String sanitezedWord = sanitazeString(word);
         try {
-            String content = readFile(filePath, StandardCharsets.UTF_8);
+            String content = readFile(filePath);
 
             Pattern pattern = Pattern.compile("\\b\\w+\\b");
             Matcher matcher = pattern.matcher(content);
@@ -84,39 +89,64 @@ public class Indexer {
                 }
             }
             System.out.println("a palavra {" + word + "} aparece " + hashTable.getWordsCount(sanitezedWord.hashCode(), sanitezedWord) + "x dentro do arquivo");
-        } catch (AccessDeniedException e) {
+        } catch (Exception e) {
             System.out.println("Para desta operação forneca o caminho para um arquivo de texto");
         }
 
     }
 
-    private static void searchTermNFile(String word, String filePath) {
+    private static void searchTermNFile(String word, String directoryPath) throws ExecuteException {
         System.out.println("Iniciando operação --search TERMO ARQUIVO");
-        File[] files = getFiles(filePath);
-        if (files != null) {
-            System.out.println(files.length + " arquivos presentes no diretório " + filePath);
+        List<File> files = getFiles(directoryPath);
+        IndexerHashTable hashTable = new IndexerHashTable();
+        
+        if (files != null && files.size() > 0) {
+            for (File file : files) {
+                int wordsCount = 0;
+                String filePath = file.getAbsolutePath();
+                String content = readFile(filePath);
+
+                Pattern pattern = Pattern.compile("\\b\\w+\\b");
+                Matcher matcher = pattern.matcher(content);
+
+                while (matcher.find()) {
+                    String currentWord = matcher.group();
+                    currentWord = sanitazeString(currentWord);
+                    if (currentWord.length() >= 2) {
+                        hashTable.put(currentWord.hashCode(), currentWord);
+                        wordsCount++;
+                    }
+                }
+                System.out.println(wordsCount + " palavras no arquivo " + file.getName());
+            }
+            System.out.println(files.size() + " arquivos presentes no diretório " + directoryPath);
         } else {
-            System.out.println("Diretório inexsistente");
+            System.out.println("Diretório vazio ou inexsistente");
         }
     }
 
     //retorna o conteúdo do arquivo em formato de String. utilizando nos casos de --freq e --freq-word
-    static String readFile(String path, Charset encoding) throws AccessDeniedException {
-        byte[] encoded = null;
-        try {
-            encoded = Files.readAllBytes(Paths.get(path));
-        } catch (IOException ex) {
-            System.out.println("Não foi possivel ler o arquivo");
-        }
-        return encoding.decode(ByteBuffer.wrap(encoded)).toString();
+     public static String readFile(String filePath) {
+        StringBuilder content = new StringBuilder();
+
+        try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath), StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            
+        } 
+
+        return content.toString();
     }
 
     // traz todos os arquivos presentes no diretório passado por parâmetro na operação de --search
-    private static File[] getFiles(String pathName) {
-        File[] arquivos = null;
+    private static  List<File> getFiles(String pathName) {
+        List<File> arquivos = null;
         File path = new File(pathName);
 
-        arquivos = path.listFiles();
+        arquivos = Arrays.asList(path.listFiles());
         return arquivos;
     }
 
